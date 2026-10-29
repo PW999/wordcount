@@ -1,0 +1,46 @@
+diff --git a/bindings/go/pkg/whisper/model.go b/bindings/go/pkg/whisper/model.go
+index 68a1502..0946844 100644
+--- a/bindings/go/pkg/whisper/model.go
++++ b/bindings/go/pkg/whisper/model.go
+@@ -24,10 +24,16 @@ var _ Model = (*model)(nil)
+ // LIFECYCLE
+ 
+ func New(path string) (Model, error) {
++	return NewWithGPU(path, true, 0)
++}
++
++// NewWithGPU loads a model, choosing whether the GPU is used and which GPU
++// device runs it.
++func NewWithGPU(path string, useGPU bool, gpuDevice int) (Model, error) {
+ 	model := new(model)
+ 	if _, err := os.Stat(path); err != nil {
+ 		return nil, err
+-	} else if ctx := whisper.Whisper_init(path); ctx == nil {
++	} else if ctx := whisper.Whisper_init_with_gpu(path, useGPU, gpuDevice); ctx == nil {
+ 		return nil, ErrUnableToLoadModel
+ 	} else {
+ 		model.ctx = ctx
+diff --git a/bindings/go/whisper.go b/bindings/go/whisper.go
+index 3ef7341..241aabf 100644
+--- a/bindings/go/whisper.go
++++ b/bindings/go/whisper.go
+@@ -102,9 +102,18 @@ var (
+ // Allocates all memory needed for the model and loads the model from the given file.
+ // Returns NULL on failure.
+ func Whisper_init(path string) *Context {
++	return Whisper_init_with_gpu(path, true, 0)
++}
++
++// Like Whisper_init, but chooses whether the GPU is used and which GPU device
++// runs the model. Returns NULL on failure.
++func Whisper_init_with_gpu(path string, useGPU bool, gpuDevice int) *Context {
+ 	cPath := C.CString(path)
+ 	defer C.free(unsafe.Pointer(cPath))
+-	if ctx := C.whisper_init_from_file_with_params(cPath, C.whisper_context_default_params()); ctx != nil {
++	params := C.whisper_context_default_params()
++	params.use_gpu = C.bool(useGPU)
++	params.gpu_device = C.int(gpuDevice)
++	if ctx := C.whisper_init_from_file_with_params(cPath, params); ctx != nil {
+ 		return (*Context)(ctx)
+ 	} else {
+ 		return nil

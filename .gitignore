@@ -1,0 +1,4 @@
+build/
+wordcount
+third_party/
+*.bin
