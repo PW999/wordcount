@@ -5,6 +5,8 @@ words per minute plus a running transcript. Speech recognition runs on your
 machine with [whisper.cpp](https://github.com/ggml-org/whisper.cpp); no audio
 leaves it.
 
+![Screenshot of the application, me just babbling along to get at least a minute filled](img.png)
+
 ## Build
 
 Prerequisites: `cmake`, `g++`, `make`, `git`, and Go. On Fedora:
