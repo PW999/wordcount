@@ -89,7 +89,7 @@ $(WHISPER_LIB): check-deps check-gpu-deps $(PATCH_STAMP)
 		$(GPU_CMAKE_FLAGS) \
 		-DWHISPER_BUILD_EXAMPLES=OFF \
 		-DWHISPER_BUILD_TESTS=OFF
-	cmake --build $(WHISPER_BUILD) --target whisper -j
+	cmake --build $(WHISPER_BUILD) --target whisper -j8
 
 whisper: $(WHISPER_LIB)
 
