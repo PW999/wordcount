@@ -1,4 +1,4 @@
 build/
-wordcount
+/wordcount
 third_party/
 *.bin
